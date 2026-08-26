@@ -101,7 +101,7 @@ export async function getResidentByUserId(
 ): Promise<Resident | null> {
 
   const result =
-    await databases.listDocuments<Resident>({
+    await databases.listDocuments({
       databaseId: DATABASE_ID,
       collectionId: COLLECTIONS.residents,
       queries: [
@@ -111,7 +111,7 @@ export async function getResidentByUserId(
       ],
     });
 
-  return result.documents[0] ?? null;
+  return (result.documents[0] as unknown as any) ?? null;
 }
 
 
@@ -124,7 +124,7 @@ export async function getResidentAccount(
 ): Promise<ResidentAccount | null> {
 
   const result =
-    await databases.listDocuments<ResidentAccount>({
+    await databases.listDocuments({
       databaseId: DATABASE_ID,
       collectionId: COLLECTIONS.residentAccounts,
       queries: [
@@ -133,7 +133,7 @@ export async function getResidentAccount(
       ],
     });
 
-  return result.documents[0] ?? null;
+  return (result.documents[0] as unknown as any) ?? null;
 }
 
 
@@ -146,7 +146,7 @@ export async function getResidentBills(
 ): Promise<Bill[]> {
 
   const result =
-    await databases.listDocuments<Bill>({
+    await databases.listDocuments({
       databaseId: DATABASE_ID,
       collectionId: COLLECTIONS.bills,
       queries: [
@@ -155,7 +155,7 @@ export async function getResidentBills(
       ],
     });
 
-  return result.documents;
+  return result.documents as unknown as any[];
 }
 
 
@@ -168,7 +168,7 @@ export async function getResidentPayments(
 ): Promise<Payment[]> {
 
   const result =
-    await databases.listDocuments<Payment>({
+    await databases.listDocuments({
       databaseId: DATABASE_ID,
       collectionId: COLLECTIONS.payments,
       queries: [
@@ -177,7 +177,7 @@ export async function getResidentPayments(
       ],
     });
 
-  return result.documents;
+  return result.documents as unknown as any[];
 }
 
 

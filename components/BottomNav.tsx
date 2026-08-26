@@ -20,3 +20,10 @@ export function BottomNav() {
     </TouchableOpacity>;
   })}</View>;
 }
+
+const styles = StyleSheet.create({
+  bar: { flexDirection: 'row', backgroundColor: '#fff', paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#eee', justifyContent: 'space-around' },
+  item: { flex: 1, alignItems: 'center' },
+  label: { fontSize: 11, color: '#888' },
+  active: { color: '#062B6F', fontWeight: '700' },
+});

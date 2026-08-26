@@ -1,4 +1,12 @@
-import { View, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
+#!/usr/bin/env node
+// style-home.js - RUN IN VS CODE TERMINAL
+// Usage: node .\style-home.js
+// Premium Home tab - SmartPay brand
+
+const fs = require('fs');
+const path = 'app/(tabs)/home.tsx';
+
+const newHome = `import { View, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
 import { useResident } from '../../lib/resident-context';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -53,7 +61,7 @@ export default function Home() {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <View>
               <Text style={{ fontSize: 10, fontWeight: '700', color: '#94A3B8', letterSpacing: 1, textTransform: 'uppercase' }}>Total Due</Text>
-              <Text style={{ fontSize: 28, fontWeight: '900', color: '#0F172A', marginTop: 4 }}>${Number(balance).toFixed(2)}</Text>
+              <Text style={{ fontSize: 28, fontWeight: '900', color: '#0F172A', marginTop: 4 }}>\${Number(balance).toFixed(2)}</Text>
               <Text style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>{balance > 0 ? 'Payment due soon' : 'All clear — no outstanding balance'}</Text>
             </View>
             <View style={{ backgroundColor: balance > 0 ? '#FEF2F2' : '#F0FDF4', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10 }}>
@@ -64,11 +72,11 @@ export default function Home() {
           <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
             <View style={{ flex: 1, backgroundColor: '#F8FAFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#EEF2FF' }}>
               <Text style={{ fontSize: 10, fontWeight: '700', color: '#64748B' }}>WATER</Text>
-              <Text style={{ fontSize: 14, fontWeight: '800', color: '#0F172A', marginTop: 2 }}>${Number(waterDue).toFixed(2)}</Text>
+              <Text style={{ fontSize: 14, fontWeight: '800', color: '#0F172A', marginTop: 2 }}>\${Number(waterDue).toFixed(2)}</Text>
             </View>
             <View style={{ flex: 1, backgroundColor: '#F8FAFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#EEF2FF' }}>
               <Text style={{ fontSize: 10, fontWeight: '700', color: '#64748B' }}>LEVIES</Text>
-              <Text style={{ fontSize: 14, fontWeight: '800', color: '#0F172A', marginTop: 2 }}>${(Number(balance) - Number(waterDue)).toFixed(2)}</Text>
+              <Text style={{ fontSize: 14, fontWeight: '800', color: '#0F172A', marginTop: 2 }}>\${(Number(balance) - Number(waterDue)).toFixed(2)}</Text>
             </View>
           </View>
         </View>
@@ -77,39 +85,22 @@ export default function Home() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 100 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#1769FF" />}>
         
         {/* Quick Actions */}
-                {/* Quick Actions - 4 */}
         <Text style={{ fontSize: 12, fontWeight: '800', color: '#0F172A', letterSpacing: 0.5, marginBottom: 12 }}>QUICK ACTIONS</Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/bills' as any)} style={{ width: '48%', backgroundColor: '#fff', borderRadius: 18, padding: 16, borderWidth: 1, borderColor: '#E2E8F0' }}>
-            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-              <Text style={{ fontSize: 18 }}>🧾</Text>
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/payments' as any)} style={{ flex: 1, backgroundColor: '#1769FF', borderRadius: 18, padding: 16, shadowColor: '#1769FF', shadowOpacity: 0.3, shadowRadius: 12, shadowOffset: { width: 0, height: 6 }, elevation: 6 }}>
+            <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+              <Text style={{ fontSize: 16 }}>💳</Text>
             </View>
-            <Text style={{ color: '#0F172A', fontWeight: '800', fontSize: 13 }}>View Bills</Text>
-            <Text style={{ color: '#64748B', fontSize: 11, marginTop: 2 }}>Check levies & water</Text>
+            <Text style={{ color: '#fff', fontWeight: '800', fontSize: 13 }}>Pay Now</Text>
+            <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, marginTop: 2 }}>Clear balance</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => router.push('/(tabs)/payments' as any)} style={{ width: '48%', backgroundColor: '#1769FF', borderRadius: 18, padding: 16, shadowColor: '#1769FF', shadowOpacity: 0.3, shadowRadius: 12, shadowOffset: { width: 0, height: 6 }, elevation: 6 }}>
-            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-              <Text style={{ fontSize: 18 }}>💳</Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/bills' as any)} style={{ flex: 1, backgroundColor: '#fff', borderRadius: 18, padding: 16, borderWidth: 1, borderColor: '#E2E8F0' }}>
+            <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+              <Text style={{ fontSize: 16 }}>🧾</Text>
             </View>
-            <Text style={{ color: '#fff', fontWeight: '800', fontSize: 13 }}>Make Payment</Text>
-            <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, marginTop: 2 }}>Pay securely</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => router.push('/(tabs)/payments' as any)} style={{ width: '48%', backgroundColor: '#fff', borderRadius: 18, padding: 16, borderWidth: 1, borderColor: '#E2E8F0' }}>
-            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#EEF4FF', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-              <Text style={{ fontSize: 18 }}>📊</Text>
-            </View>
-            <Text style={{ color: '#0F172A', fontWeight: '800', fontSize: 13 }}>Payment History</Text>
-            <Text style={{ color: '#64748B', fontSize: 11, marginTop: 2 }}>Past receipts</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => router.push('/(tabs)/profile' as any)} style={{ width: '48%', backgroundColor: '#062B6F', borderRadius: 18, padding: 16 }}>
-            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-              <Text style={{ fontSize: 18 }}>📢</Text>
-            </View>
-            <Text style={{ color: '#fff', fontWeight: '800', fontSize: 13 }}>Community</Text>
-            <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 2 }}>Notices & updates</Text>
+            <Text style={{ color: '#0F172A', fontWeight: '800', fontSize: 13 }}>My Bills</Text>
+            <Text style={{ color: '#64748B', fontSize: 11, marginTop: 2 }}>View history</Text>
           </TouchableOpacity>
         </View>
 
@@ -139,7 +130,12 @@ export default function Home() {
           </View>
         </View>
 
+
       </ScrollView>
     </View>
   );
 }
+`;
+
+fs.writeFileSync(path, newHome, 'utf8');
+console.log(`✔ Styled ${path} with premium brand`);

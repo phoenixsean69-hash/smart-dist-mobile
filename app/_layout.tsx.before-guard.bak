@@ -1,0 +1,16 @@
+import "../global.css";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ResidentProvider } from "../lib/resident-context";
+
+export default function RootLayout() {
+  return (
+    <SafeAreaProvider>
+      <ResidentProvider>
+        <StatusBar style="light" />
+        <Stack screenOptions={{ headerShown: false }} />
+      </ResidentProvider>
+    </SafeAreaProvider>
+  );
+}

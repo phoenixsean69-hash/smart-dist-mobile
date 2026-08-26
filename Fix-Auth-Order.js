@@ -1,4 +1,12 @@
-import { useEffect, useState, useRef } from 'react';
+#!/usr/bin/env node
+// fix-auth-order.js - RUN IN VS CODE TERMINAL
+// Fixes flash of homepage before login
+// Usage: node .\fix-auth-order.js
+
+const fs = require('fs');
+const path = 'app/_layout.tsx';
+
+const fixedLayout = `import { useEffect, useState, useRef } from 'react';
 import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, Animated, Easing } from 'react-native';
@@ -55,7 +63,7 @@ function AuthLoadingScreen() {
       </View>
       <View style={{ marginTop: 28, alignItems: 'center' }}>
         <Text style={{ fontSize: 15, fontWeight: '800', color: '#0F172A', letterSpacing: 0.5 }}>SMARTPAY</Text>
-        <Text style={{ fontSize: 11, fontWeight: '600', color: '#94A3B8', letterSpacing: 1.2, marginTop: 4 }}>CHECKING ACCOUNT</Text>
+        <Text style={{ fontSize: 11, fontWeight: '600', color: '#94A3B8', letterSpacing: 1.2, marginTop: 4 }}>CHECKING SESSION</Text>
       </View>
     </View>
   );
@@ -89,7 +97,7 @@ export default function RootLayout() {
     if (!rootNav?.key) return;
 
     const isLoginPage = segments[0] === 'login';
-    const isInTabs = segments[0] === '(tabs)' || !segments[0]; // empty on cold start = tabs
+    const isInTabs = segments[0] === '(tabs)' || segments.length === 0; // empty on cold start = tabs
 
     if (isAuthenticated === false && isInTabs) {
       router.replace('/login' as any);
@@ -105,7 +113,7 @@ export default function RootLayout() {
   }
 
   // Extra block: if not authed but still on tabs (during redirect), keep showing loader
-  if (isAuthenticated === false && (segments[0] === '(tabs)' || !segments[0])) {
+  if (isAuthenticated === false && (segments[0] === '(tabs)' || segments.length === 0)) {
     return <AuthLoadingScreen />;
   }
   if (isAuthenticated === true && segments[0] === 'login') {
@@ -122,3 +130,20 @@ export default function RootLayout() {
     </ResidentProvider>
   );
 }
+`;
+
+fs.writeFileSync(path, fixedLayout, 'utf8');
+console.log(`✔ Fixed ${path} - now shows login first, no homepage flash`);
+console.log(`
+Run:
+  npx tsc --noEmit
+  npx expo start
+
+Flow now:
+1. White animated loader (S pulsing + spinning ring)
+2. Check account.get()
+3. If NO session -> /login (never shows tabs)
+4. If YES session -> /(tabs)/home
+
+Test: Sign out from profile -> should see loader -> then login, no home flash
+`);

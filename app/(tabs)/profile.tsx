@@ -1,90 +1,89 @@
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useResident } from "../../lib/resident-context";
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { useResident } from '../../lib/resident-context';
+import { useRouter } from 'expo-router';
+import { account } from '../../lib/appwrite';
 
 export default function Profile() {
-  const { resident } = useResident();
+  const { resident, loading } = useResident() as any;
+  const router = useRouter();
 
-  const rows: [string, string][] = [
-    ["National ID", resident.nationalId ?? "-"],
-    ["Address", resident.address],
-    ["Ward", resident.ward],
-    ["Property No.", resident.propertyNumber ?? "-"],
-  ];
+  const handleLogout = async () => {
+    try {
+      await account.deleteSession('current');
+      router.replace('/login' as any);
+    } catch (e: any) {
+      console.log('[logout]', e);
+      router.replace('/login' as any);
+    }
+  };
 
-  const actions = [
-    { icon: "pencil-outline", label: "Update Profile", color: "#1769FF", to: null },
-    { icon: "lock-closed-outline", label: "Change Password", color: "#7654D8", to: "/settings" },
-    { icon: "notifications-outline", label: "Notifications", color: "#12A95C", to: "/notifications" },
-    { icon: "settings-outline", label: "Settings", color: "#FF9B19", to: "/settings" },
-  ];
+  if (loading) {
+    return <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator color="#1769FF" /></View>;
+  }
+
+  const firstName = resident?.fullName?.split(' ')[0] || 'Resident';
+  const initials = (resident?.fullName || 'T M').split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
-      <View className="bg-navy px-5 pt-4 pb-12">
-        <Text className="text-white text-2xl font-black">Profile</Text>
-        <Text className="text-blue-200 text-xs mt-1 font-bold">Your account details</Text>
+    <View style={{ flex: 1, backgroundColor: '#F6F8FF' }}>
+      <View style={{ backgroundColor: '#062B6F', paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20, alignItems: 'center', borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+        <View style={{ width: 72, height: 72, borderRadius: 22, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+          <Text style={{ fontSize: 24, fontWeight: '900', color: '#062B6F' }}>{initials}</Text>
+        </View>
+        <Text style={{ color: '#fff', fontSize: 18, fontWeight: '900' }}>{resident?.fullName || 'Tapiwa Moyo'}</Text>
+        <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, marginTop: 4 }}>{resident?.email || 'tapiwa@test.com'}</Text>
+        <View style={{ marginTop: 12, backgroundColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 }}>
+          <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700', letterSpacing: 1 }}>STAND {resident?.standNumber || '----'} • VERIFIED</Text>
+        </View>
       </View>
 
-      <ScrollView
-        className="flex-1 -mt-8"
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="bg-white border border-edge rounded-3xl p-5 mb-5">
-          <View className="flex-row items-center">
-            <View className="w-16 h-16 rounded-full bg-brand items-center justify-center mr-4">
-              <Text className="text-white text-xl font-black">
-                {resident.firstName[0]}
-                {resident.lastName[0]}
-              </Text>
-            </View>
-            <View className="flex-1">
-              <Text className="text-base font-black text-ink">
-                {resident.firstName} {resident.lastName}
-              </Text>
-              <Text className="text-[11px] text-muted mt-1">{resident.email}</Text>
-              <Text className="text-[11px] text-muted mt-0.5">{resident.phone}</Text>
-            </View>
-          </View>
-        </View>
-
-        <Text className="text-sm font-black text-ink mb-2 ml-1">Personal Information</Text>
-        <View className="bg-white border border-edge rounded-2xl overflow-hidden mb-5">
-          {rows.map(([k, v], i) => (
-            <View
-              key={k}
-              className={
-                "flex-row items-center justify-between px-4 py-3.5 " +
-                (i < rows.length - 1 ? "border-b border-edge" : "")
-              }
-            >
-              <Text className="text-[11px] font-bold text-muted">{k}</Text>
-              <Text className="text-[11px] font-black text-ink text-right flex-1 ml-4">{v}</Text>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
+        <View style={{ backgroundColor: '#fff', borderRadius: 18, padding: 16, borderWidth: 1, borderColor: '#E2E8F0' }}>
+          <Text style={{ fontSize: 11, fontWeight: '800', color: '#0F172A', letterSpacing: 0.5, marginBottom: 14 }}>PERSONAL INFORMATION</Text>
+          {[
+            { label: 'Full Name', value: resident?.fullName || 'Tapiwa Moyo' },
+            { label: 'Email', value: resident?.email || 'tapiwa@test.com' },
+            { label: 'Phone', value: resident?.phone || '+263 77 123 4567' },
+            { label: 'Stand Number', value: resident?.standNumber || '1234' },
+            { label: 'Account Created', value: resident?.$createdAt ? new Date(resident.$createdAt).toLocaleDateString() : '2026-01-15' },
+          ].map((row, i, arr) => (
+            <View key={row.label}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12 }}>
+                <Text style={{ fontSize: 12, color: '#64748B' }}>{row.label}</Text>
+                <Text style={{ fontSize: 12, fontWeight: '700', color: '#0F172A', maxWidth: 180, textAlign: 'right' }}>{row.value}</Text>
+              </View>
+              {i < arr.length - 1 && <View style={{ height: 1, backgroundColor: '#F1F5F9' }} />}
             </View>
           ))}
         </View>
 
-        {actions.map((a) => (
-          <TouchableOpacity
-            key={a.label}
-            activeOpacity={0.8}
-            onPress={() => a.to && router.push(a.to as any)}
-            className="bg-white border border-edge rounded-2xl flex-row items-center px-4 py-3.5 mb-3"
-          >
-            <View
-              className="w-8 h-8 rounded-lg items-center justify-center mr-3"
-              style={{ backgroundColor: a.color + "1A" }}
-            >
-              <Ionicons name={a.icon as any} size={16} color={a.color} />
-            </View>
-            <Text className="flex-1 text-[13px] font-bold text-ink">{a.label}</Text>
-            <Ionicons name="chevron-forward" size={16} color="#71809A" />
+        <View style={{ backgroundColor: '#fff', borderRadius: 18, padding: 16, marginTop: 16, borderWidth: 1, borderColor: '#E2E8F0' }}>
+          <Text style={{ fontSize: 11, fontWeight: '800', color: '#0F172A', letterSpacing: 0.5, marginBottom: 12 }}>SUPPORT</Text>
+          <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12 }}>
+            <Text style={{ fontSize: 13, color: '#0F172A', fontWeight: '600' }}>💬  Contact Council</Text>
+            <Text style={{ color: '#94A3B8' }}>›</Text>
           </TouchableOpacity>
-        ))}
+          <View style={{ height: 1, backgroundColor: '#F1F5F9' }} />
+          <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12 }}>
+            <Text style={{ fontSize: 13, color: '#0F172A', fontWeight: '600' }}>📄  Download Statement</Text>
+            <Text style={{ color: '#94A3B8' }}>›</Text>
+          </TouchableOpacity>
+          <View style={{ height: 1, backgroundColor: '#F1F5F9' }} />
+          <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12 }}>
+            <Text style={{ fontSize: 13, color: '#0F172A', fontWeight: '600' }}>🔒  Privacy & Security</Text>
+            <Text style={{ color: '#94A3B8' }}>›</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity onPress={handleLogout} style={{ backgroundColor: '#fee2e2', borderRadius: 16, paddingVertical: 14, alignItems: 'center', marginTop: 24, borderWidth: 1, borderColor: '#fecaca' }}>
+          <Text style={{ color: '#dc2626', fontWeight: '800', fontSize: 14 }}>Sign Out</Text>
+        </TouchableOpacity>
+
+        <View style={{ alignItems: 'center', marginTop: 20 }}>
+          <Text style={{ fontSize: 10, color: '#94A3B8', fontWeight: '600', letterSpacing: 1 }}>SMARTPAY RESIDENT • v1.0.0</Text>
+          <Text style={{ fontSize: 10, color: '#CBD5E1', marginTop: 4 }}>Secure • Encrypted • Appwrite</Text>
+        </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

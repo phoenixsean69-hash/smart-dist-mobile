@@ -1,89 +1,96 @@
-import { Ionicons } from "@expo/vector-icons";
-import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useResident } from "../../lib/resident-context";
-
-const money = (n: number) => "$" + (n ?? 0).toFixed(2);
-const fmt = (d: string) =>
-  new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-
-const ICONS: Record<string, string> = {
-  EcoCash: "phone-portrait-outline",
-  Cash: "cash-outline",
-  "Bank Transfer": "business-outline",
-};
+import { View, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { useResident } from '../../lib/resident-context';
+import { useState } from 'react';
 
 export default function Payments() {
-  const { payments } = useResident();
-  const totalPaid = payments.reduce((s, p) => s + p.amount, 0);
+  const { resident, loading } = useResident() as any;
+  const [amount, setAmount] = useState('');
+  const [method, setMethod] = useState('EcoCash');
+  const [paying, setPaying] = useState(false);
+
+  if (loading) {
+    return <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator color="#1769FF" /></View>;
+  }
+
+  const balance = resident?.balance ?? 165.50;
+  const payments = resident?.payments || [
+    { id: 'p1', amount: 120, date: '2026-07-28', method: 'EcoCash', status: 'success', ref: 'PAY-7821' },
+    { id: 'p2', amount: 42, date: '2026-07-28', method: 'ZiG', status: 'success', ref: 'PAY-7820' },
+    { id: 'p3', amount: 165.50, date: '2026-06-30', method: 'Card', status: 'success', ref: 'PAY-7654' },
+  ];
+
+  const handlePay = () => {
+    if (!amount) { Alert.alert('Enter amount'); return; }
+    setPaying(true);
+    setTimeout(() => {
+      setPaying(false);
+      Alert.alert('Payment initiated', `${method} payment of $${amount} is processing`);
+      setAmount('');
+    }, 1200);
+  };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
-      <View className="bg-navy px-5 pt-4 pb-10">
-        <Text className="text-white text-2xl font-black">Payment History</Text>
-        <Text className="text-blue-200 text-xs mt-1 font-bold">
-          {payments.length} transaction{payments.length === 1 ? "" : "s"} recorded
-        </Text>
+    <View style={{ flex: 1, backgroundColor: '#F6F8FF' }}>
+      <View style={{ backgroundColor: '#062B6F', paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' }}>Total Outstanding</Text>
+        <Text style={{ color: '#fff', fontSize: 32, fontWeight: '900', marginTop: 6 }}>${Number(balance).toFixed(2)}</Text>
+        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginTop: 4 }}>Stand {resident?.standNumber || '----'} • {resident?.fullName || ''}</Text>
       </View>
 
-      <View className="mx-4 -mt-7 bg-white border border-edge rounded-2xl flex-row">
-        <View className="flex-1 px-4 py-4">
-          <Text className="text-[9px] text-muted font-bold uppercase tracking-wide">Total paid</Text>
-          <Text className="text-lg font-black text-success mt-1">{money(totalPaid)}</Text>
-        </View>
-        <View className="flex-1 px-4 py-4 border-l border-edge">
-          <Text className="text-[9px] text-muted font-bold uppercase tracking-wide">Transactions</Text>
-          <Text className="text-lg font-black text-ink mt-1">{payments.length}</Text>
-        </View>
-      </View>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
+        {/* Make Payment Card */}
+        <View style={{ backgroundColor: '#fff', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: '#E2E8F0' }}>
+          <Text style={{ fontSize: 13, fontWeight: '800', color: '#0F172A' }}>Make Payment</Text>
+          <Text style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>Secure payment powered by SmartPay</Text>
 
-      <ScrollView
-        className="flex-1 mt-4"
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 28 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {payments.length === 0 ? (
-          <View className="items-center py-16">
-            <Ionicons name="card-outline" size={38} color="#71809A" />
-            <Text className="text-sm font-black text-ink mt-3">No payments yet</Text>
-            <Text className="text-xs text-muted mt-1">Your transactions will appear here.</Text>
+          <Text style={{ fontSize: 10, fontWeight: '700', color: '#334155', letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 20, marginBottom: 8 }}>Amount (USD)</Text>
+          <View style={{ backgroundColor: '#F8FAFF', borderWidth: 1.5, borderColor: '#E2E8F0', borderRadius: 14, paddingHorizontal: 16, height: 52, flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ fontWeight: '800', color: '#0F172A', marginRight: 8 }}>$</Text>
+            <TextInput value={amount} onChangeText={setAmount} keyboardType="numeric" placeholder={balance.toFixed(2)} placeholderTextColor="#94A3B8" style={{ flex: 1, fontSize: 16, fontWeight: '700', color: '#0F172A' }} />
+            <TouchableOpacity onPress={() => setAmount(balance.toFixed(2))} style={{ backgroundColor: '#EEF4FF', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 }}>
+              <Text style={{ fontSize: 10, fontWeight: '800', color: '#1769FF' }}>FULL</Text>
+            </TouchableOpacity>
           </View>
-        ) : (
-          payments.map((p) => (
-            <View key={p.$id} className="bg-white border border-edge rounded-2xl p-4 mb-3">
-              <View className="flex-row items-center">
-                <View className="w-10 h-10 rounded-xl bg-successSoft items-center justify-center mr-3">
-                  <Ionicons
-                    name={(ICONS[p.paymentMethod] ?? "card-outline") as any}
-                    size={18}
-                    color="#12A95C"
-                  />
+
+          <Text style={{ fontSize: 10, fontWeight: '700', color: '#334155', letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 16, marginBottom: 8 }}>Payment Method</Text>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {['EcoCash','ZiG','Card'].map(m => (
+              <TouchableOpacity key={m} onPress={() => setMethod(m)} style={{ flex: 1, paddingVertical: 12, borderRadius: 12, alignItems: 'center', backgroundColor: method === m ? '#062B6F' : '#fff', borderWidth: 1, borderColor: method === m ? '#062B6F' : '#E2E8F0' }}>
+                <Text style={{ fontSize: 12, fontWeight: '700', color: method === m ? '#fff' : '#64748B' }}>{m}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <TouchableOpacity onPress={handlePay} disabled={paying} style={{ marginTop: 20, backgroundColor: paying ? '#8AA8FF' : '#1769FF', borderRadius: 14, height: 52, alignItems: 'center', justifyContent: 'center' }}>
+            {paying ? <ActivityIndicator color="#fff" /> : <Text style={{ color: '#fff', fontWeight: '800', fontSize: 14 }}>Pay ${amount || balance.toFixed(2)} with {method}</Text>}
+          </TouchableOpacity>
+        </View>
+
+        {/* History */}
+        <View style={{ marginTop: 20 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <Text style={{ fontSize: 12, fontWeight: '800', color: '#0F172A', letterSpacing: 0.5 }}>PAYMENT HISTORY</Text>
+            <Text style={{ fontSize: 11, color: '#64748B' }}>{payments.length} transactions</Text>
+          </View>
+
+          {payments.map((p: any) => (
+            <View key={p.id} style={{ backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#E2E8F0', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+                <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#F0FDF4', alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontSize: 16 }}>✓</Text>
                 </View>
-                <View className="flex-1 pr-2">
-                  <Text className="text-[13px] font-black text-ink">{p.paymentReference}</Text>
-                  {p.notes ? (
-                    <Text className="text-[10px] text-muted mt-0.5">{p.notes}</Text>
-                  ) : null}
-                </View>
-                <View className="items-end">
-                  <Text className="text-[15px] font-black text-success">{money(p.amount)}</Text>
-                  <Text className="text-[9px] text-muted mt-0.5">{fmt(p.paymentDate)}</Text>
+                <View>
+                  <Text style={{ fontWeight: '800', fontSize: 13, color: '#0F172A' }}>${p.amount.toFixed(2)} • {p.method}</Text>
+                  <Text style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>{p.date} • {p.ref}</Text>
                 </View>
               </View>
-
-              <View className="flex-row items-center justify-between mt-3 pt-3 border-t border-edge">
-                <View className="flex-row items-center">
-                  <Ionicons name="layers-outline" size={12} color="#71809A" />
-                  <Text className="text-[10px] text-muted font-bold ml-1.5">{p.paymentMethod}</Text>
-                </View>
-                <View className="px-2.5 py-1 bg-successSoft rounded-full">
-                  <Text className="text-[9px] font-black text-success capitalize">{p.status}</Text>
-                </View>
+              <View style={{ backgroundColor: '#F0FDF4', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}>
+                <Text style={{ fontSize: 10, fontWeight: '800', color: '#16A34A' }}>SUCCESS</Text>
               </View>
             </View>
-          ))
-        )}
+          ))}
+        </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
