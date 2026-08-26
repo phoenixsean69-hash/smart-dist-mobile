@@ -1,0 +1,9 @@
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Header } from '../components/Header';
+import { Screen } from '../components/Screen';
+import { colors } from '../constants/theme';
+const rows=[['notifications-outline','Notification Settings',''],['lock-closed-outline','Change Password',''],['globe-outline','Language','English'],['help-circle-outline','Help & Support',''],['information-circle-outline','About SmartPay','']];
+export default function Settings(){return <View style={styles.root}><Header title="Settings"/><Screen>{rows.map(([icon,label,right])=><TouchableOpacity key={label} style={styles.row} onPress={()=>label==='Notification Settings'?router.push('/notifications'):Alert.alert(label,'This settings screen is ready for backend wiring.')}><Ionicons name={icon as any} size={19} color={colors.text}/><Text style={styles.label}>{label}</Text><Text style={styles.right}>{right||'›'}</Text></TouchableOpacity>)}<TouchableOpacity style={styles.logout} onPress={()=>Alert.alert('Logout','Connect this button to Appwrite account.deleteSession("current").')}><Ionicons name="log-out-outline" size={19} color={colors.danger}/><Text style={styles.logoutText}>Logout</Text></TouchableOpacity></Screen></View>}
+const styles=StyleSheet.create({root:{flex:1,backgroundColor:colors.background},row:{backgroundColor:colors.white,borderWidth:1,borderColor:colors.border,borderRadius:10,padding:14,marginBottom:8,flexDirection:'row',alignItems:'center',gap:12},label:{flex:1,fontSize:11,fontWeight:'700',color:colors.text},right:{fontSize:11,color:colors.muted},logout:{backgroundColor:colors.white,borderWidth:1,borderColor:colors.border,borderRadius:10,padding:14,marginTop:2,flexDirection:'row',alignItems:'center',gap:12},logoutText:{fontSize:11,fontWeight:'800',color:colors.danger}});
