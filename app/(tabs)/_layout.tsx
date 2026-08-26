@@ -1,40 +1,47 @@
-﻿import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../constants/theme';
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+
+const TABS = [
+  { name: "home", title: "Home", icon: "home-outline", active: "home" },
+  { name: "bills", title: "Bills", icon: "receipt-outline", active: "receipt" },
+  { name: "payments", title: "Payments", icon: "card-outline", active: "card" },
+  { name: "profile", title: "Profile", icon: "person-outline", active: "person" },
+] as const;
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.blue,
-        tabBarInactiveTintColor: colors.muted,
+        tabBarActiveTintColor: "#1769FF",
+        tabBarInactiveTintColor: "#71809A",
         tabBarStyle: {
-          backgroundColor: colors.white,
-          borderTopColor: colors.border,
+          backgroundColor: "#FFFFFF",
+          borderTopColor: "#E5EAF1",
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
+          height: 64,
+          paddingBottom: 10,
+          paddingTop: 6,
         },
-        tabBarLabelStyle: { fontSize: 10, fontWeight: '700' },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "700" },
       }}
     >
-      <Tabs.Screen
-        name="home"
-        options={{ title: 'Home', tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} /> }}
-      />
-      <Tabs.Screen
-        name="bills"
-        options={{ title: 'Bills', tabBarIcon: ({ color, size }) => <Ionicons name="receipt-outline" size={size} color={color} /> }}
-      />
-      <Tabs.Screen
-        name="payments"
-        options={{ title: 'Payments', tabBarIcon: ({ color, size }) => <Ionicons name="card-outline" size={size} color={color} /> }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{ title: 'Profile', tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} /> }}
-      />
+      {TABS.map((t) => (
+        <Tabs.Screen
+          key={t.name}
+          name={t.name}
+          options={{
+            title: t.title,
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={(focused ? t.active : t.icon) as any}
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+      ))}
     </Tabs>
   );
 }

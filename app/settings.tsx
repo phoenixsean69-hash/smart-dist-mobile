@@ -1,9 +1,68 @@
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Header } from '../components/Header';
-import { Screen } from '../components/Screen';
-import { colors } from '../constants/theme';
-const rows=[['notifications-outline','Notification Settings',''],['lock-closed-outline','Change Password',''],['globe-outline','Language','English'],['help-circle-outline','Help & Support',''],['information-circle-outline','About SmartPay','']];
-export default function Settings(){return <View style={styles.root}><Header title="Settings"/><Screen>{rows.map(([icon,label,right])=><TouchableOpacity key={label} style={styles.row} onPress={()=>label==='Notification Settings'?router.push('/notifications'):Alert.alert(label,'This settings screen is ready for backend wiring.')}><Ionicons name={icon as any} size={19} color={colors.text}/><Text style={styles.label}>{label}</Text><Text style={styles.right}>{right||'›'}</Text></TouchableOpacity>)}<TouchableOpacity style={styles.logout} onPress={()=>Alert.alert('Logout','Connect this button to Appwrite account.deleteSession("current").')}><Ionicons name="log-out-outline" size={19} color={colors.danger}/><Text style={styles.logoutText}>Logout</Text></TouchableOpacity></Screen></View>}
-const styles=StyleSheet.create({root:{flex:1,backgroundColor:colors.background},row:{backgroundColor:colors.white,borderWidth:1,borderColor:colors.border,borderRadius:10,padding:14,marginBottom:8,flexDirection:'row',alignItems:'center',gap:12},label:{flex:1,fontSize:11,fontWeight:'700',color:colors.text},right:{fontSize:11,color:colors.muted},logout:{backgroundColor:colors.white,borderWidth:1,borderColor:colors.border,borderRadius:10,padding:14,marginTop:2,flexDirection:'row',alignItems:'center',gap:12},logoutText:{fontSize:11,fontWeight:'800',color:colors.danger}});
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const ROWS = [
+  { icon: "notifications-outline", label: "Notification Settings", color: "#1769FF", to: "/notifications", value: "" },
+  { icon: "lock-closed-outline", label: "Change Password", color: "#7654D8", to: "", value: "" },
+  { icon: "globe-outline", label: "Language", color: "#FF9B19", to: "", value: "English" },
+  { icon: "help-circle-outline", label: "Help & Support", color: "#12A95C", to: "", value: "" },
+  { icon: "information-circle-outline", label: "About SmartPay", color: "#71809A", to: "", value: "v1.0.0" },
+];
+
+export default function Settings() {
+  return (
+    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
+      <View className="bg-navy flex-row items-center px-4 h-16">
+        <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 items-center justify-center">
+          <Ionicons name="arrow-back" size={22} color="#ffffff" />
+        </TouchableOpacity>
+        <Text className="flex-1 text-center text-white text-lg font-extrabold">Settings</Text>
+        <View className="w-10" />
+      </View>
+
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 32 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="bg-white border border-edge rounded-2xl overflow-hidden mb-4">
+          {ROWS.map((row, i) => (
+            <TouchableOpacity
+              key={row.label}
+              activeOpacity={0.8}
+              onPress={() =>
+                row.to
+                  ? router.push(row.to as any)
+                  : Alert.alert(row.label, "Ready for backend wiring.")
+              }
+              className={"flex-row items-center px-4 py-3.5 " + (i > 0 ? "border-t border-edge" : "")}
+            >
+              <View
+                className="w-8 h-8 rounded-lg items-center justify-center mr-3"
+                style={{ backgroundColor: row.color + "1A" }}
+              >
+                <Ionicons name={row.icon as any} size={16} color={row.color} />
+              </View>
+              <Text className="flex-1 text-[13px] font-bold text-ink">{row.label}</Text>
+              {row.value ? <Text className="text-[11px] text-muted mr-2">{row.value}</Text> : null}
+              <Ionicons name="chevron-forward" size={15} color="#71809A" />
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => Alert.alert("Logout", 'Connect to account.deleteSession("current").')}
+          className="bg-white border border-edge rounded-2xl flex-row items-center px-4 py-3.5"
+        >
+          <View className="w-8 h-8 rounded-lg items-center justify-center mr-3 bg-dangerSoft">
+            <Ionicons name="log-out-outline" size={16} color="#E5484D" />
+          </View>
+          <Text className="text-[13px] font-black text-danger">Logout</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}

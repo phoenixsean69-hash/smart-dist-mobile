@@ -1,9 +1,47 @@
-import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
-import { Card } from '../components/Card';
-import { Header } from '../components/Header';
-import { Screen } from '../components/Screen';
-import { colors } from '../constants/theme';
-const items=[['checkmark','Payment Successful','Your payment of $28.00 for August water charges was successful.','14 Aug 2026 · 09:15',colors.green],['notifications','Bill Due Soon','Your August water charges bill is due on 25 Aug 2026.','20 Jul 2026 · 08:30',colors.blue],['document-text','New Bill Generated','Your August property rates bill is ready.','31 Jul 2026 · 10:00',colors.orange],['information','Account Update','Your account status is current.','31 Jul 2026 · 09:45',colors.purple]] as const;
-export default function Notifications(){return <View style={styles.root}><Header title="Notifications"/><Screen>{items.map(([icon,title,body,date,color])=><Card key={title} style={styles.card}><View style={styles.row}><View style={[styles.icon,{backgroundColor:color}]}><Ionicons name={icon as any} size={18} color={colors.white}/></View><View style={{flex:1}}><Text style={styles.title}>{title}</Text><Text style={styles.body}>{body}</Text><Text style={styles.date}>{date}</Text></View><Text style={styles.chev}>›</Text></View></Card>)}</Screen></View>}
-const styles=StyleSheet.create({root:{flex:1,backgroundColor:colors.background},card:{marginBottom:8},row:{flexDirection:'row',alignItems:'flex-start',gap:10},icon:{width:32,height:32,borderRadius:16,alignItems:'center',justifyContent:'center'},title:{fontSize:11,fontWeight:'900',color:colors.text},body:{fontSize:9,color:colors.text,marginTop:3,lineHeight:14},date:{fontSize:8,color:colors.muted,marginTop:4},chev:{fontSize:22,color:colors.muted}});
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const ITEMS = [
+  { icon: "checkmark-circle-outline", title: "Payment Successful", body: "Your payment of $28.00 for August water charges was successful.", date: "14 Aug 2026 - 09:15", color: "#12A95C", bg: "#DDF7E7" },
+  { icon: "notifications-outline", title: "Bill Due Soon", body: "Your August water charges bill is due on 25 Aug 2026.", date: "20 Jul 2026 - 08:30", color: "#1769FF", bg: "#EEF4FF" },
+  { icon: "document-text-outline", title: "New Bill Generated", body: "Your August property rates bill is ready.", date: "31 Jul 2026 - 10:00", color: "#FF9B19", bg: "#FFF4E0" },
+  { icon: "information-circle-outline", title: "Account Update", body: "Your account status is current.", date: "31 Jul 2026 - 09:45", color: "#7654D8", bg: "#F0ECFF" },
+];
+
+export default function Notifications() {
+  return (
+    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
+      <View className="bg-navy flex-row items-center px-4 h-16">
+        <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 items-center justify-center">
+          <Ionicons name="arrow-back" size={22} color="#ffffff" />
+        </TouchableOpacity>
+        <Text className="flex-1 text-center text-white text-lg font-extrabold">Notifications</Text>
+        <View className="w-10" />
+      </View>
+
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 32 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {ITEMS.map((item) => (
+          <View key={item.title} className="bg-white border border-edge rounded-2xl p-4 mb-3 flex-row">
+            <View
+              className="w-10 h-10 rounded-full items-center justify-center mr-3"
+              style={{ backgroundColor: item.bg }}
+            >
+              <Ionicons name={item.icon as any} size={18} color={item.color} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-[13px] font-black text-ink">{item.title}</Text>
+              <Text className="text-[11px] text-muted mt-1 leading-4">{item.body}</Text>
+              <Text className="text-[9px] text-muted mt-2">{item.date}</Text>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}

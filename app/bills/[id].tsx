@@ -1,13 +1,108 @@
-import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Card } from '../../components/Card';
-import { Header } from '../../components/Header';
-import { Screen } from '../../components/Screen';
-import { StatusPill } from '../../components/StatusPill';
-import { colors } from '../../constants/theme';
-import { useResident } from '../../lib/resident-context';
-export default function BillDetails(){const {id}=useLocalSearchParams<{id:string}>();const {bills,payments}=useResident();const b=bills.find(x=>x.$id===id)??bills[0];const p=payments.find(x=>x.billId===b.$id);return <View style={styles.root}><Header title="Bill Details" back/><Screen><Card><View style={styles.row}><View style={styles.icon}><Ionicons name="business" size={20} color={colors.white}/></View><View style={{flex:1}}><Text style={styles.title}>{b.description}</Text><Text style={styles.meta}>{b.billNumber} · {b.revenueSourceId}</Text></View><StatusPill value={b.status}/></View><View style={styles.line}/><Info label="Description" value={b.description}/><Info label="Amount" value={`$${b.amount.toFixed(2)}`}/><Info label="Amount Paid" value={`$${b.amountPaid.toFixed(2)}`}/><Info label="Balance Due" value={`$${b.balanceDue.toFixed(2)}`} green/><Info label="Billing Date" value={fmt(b.billingDate)}/><Info label="Due Date" value={fmt(b.dueDate)}/><Info label="Status" value={b.status}/></Card>{p&&<Card style={{marginTop:12}}><Text style={styles.section}>Payment</Text><View style={styles.row}><Ionicons name="checkmark-circle" size={24} color={colors.green}/><View style={{flex:1,marginLeft:9}}><Text style={styles.title}>{p.paymentReference}</Text><Text style={styles.meta}>{p.paymentMethod} · {fmt(p.paymentDate)}</Text></View><Text style={styles.value}>${p.amount.toFixed(2)}</Text></View></Card>}<TouchableOpacity style={styles.download}><Ionicons name="download-outline" size={17} color={colors.blue}/><Text style={styles.downloadText}>Download Bill</Text></TouchableOpacity>{b.balanceDue>0&&<TouchableOpacity style={styles.pay} onPress={()=>router.push({pathname:'/payments/make',params:{billId:b.$id}})}><Text style={styles.payText}>Pay ${b.balanceDue.toFixed(2)}</Text></TouchableOpacity>}</Screen></View>}
-function Info({label,value,green}:{label:string,value:string,green?:boolean}){return <View style={styles.info}><Text style={styles.label}>{label}</Text><Text style={[styles.value,green&&{color:colors.green}]}>{value}</Text></View>}
-const fmt=(s:string)=>new Date(s).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-const styles=StyleSheet.create({root:{flex:1,backgroundColor:colors.background},row:{flexDirection:'row',alignItems:'center'},icon:{width:38,height:38,borderRadius:19,backgroundColor:colors.blue,alignItems:'center',justifyContent:'center',marginRight:9},title:{fontSize:12,fontWeight:'900',color:colors.text},meta:{fontSize:9,color:colors.muted,marginTop:3},line:{height:1,backgroundColor:colors.border,marginVertical:12},info:{flexDirection:'row',justifyContent:'space-between',paddingVertical:6},label:{fontSize:10,color:colors.text},value:{fontSize:11,fontWeight:'800',color:colors.text},section:{fontSize:13,fontWeight:'900',marginBottom:10,color:colors.text},download:{height:44,borderWidth:1,borderColor:colors.blue,borderRadius:9,alignItems:'center',justifyContent:'center',flexDirection:'row',gap:6,marginTop:18},downloadText:{color:colors.blue,fontWeight:'900',fontSize:12},pay:{height:48,backgroundColor:colors.blue,borderRadius:9,alignItems:'center',justifyContent:'center',marginTop:10},payText:{color:colors.white,fontWeight:'900',fontSize:13}});
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusPill } from "../../components/StatusPill";
+import { useResident } from "../../lib/resident-context";
+
+const money = (n: number) => "$" + (n ?? 0).toFixed(2);
+const fmt = (s: string) =>
+  new Date(s).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+
+export default function BillDetails() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { bills, payments } = useResident();
+  const bill = bills.find((x) => x.$id === id) ?? bills[0];
+  const payment = payments.find((x) => x.billId === bill?.$id);
+
+  if (!bill) return null;
+
+  const detail: [string, string][] = [
+    ["Amount", money(bill.amount)],
+    ["Amount Paid", money(bill.amountPaid)],
+    ["Balance Due", money(bill.balanceDue)],
+    ["Billing Date", fmt(bill.billingDate)],
+    ["Due Date", fmt(bill.dueDate)],
+  ];
+
+  return (
+    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
+      <View className="bg-navy flex-row items-center px-4 h-16">
+        <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 items-center justify-center">
+          <Ionicons name="arrow-back" size={22} color="#ffffff" />
+        </TouchableOpacity>
+        <Text className="flex-1 text-center text-white text-lg font-extrabold">Bill Details</Text>
+        <View className="w-10" />
+      </View>
+
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 32 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="bg-white border border-edge rounded-2xl p-4 mb-4">
+          <View className="flex-row items-center">
+            <View className="w-11 h-11 rounded-full bg-brand items-center justify-center mr-3">
+              <Ionicons name="cash-outline" size={20} color="#ffffff" />
+            </View>
+            <View className="flex-1 pr-2">
+              <Text className="text-[13px] font-black text-ink">{bill.description}</Text>
+              <Text className="text-[10px] text-muted mt-0.5">{bill.billNumber}</Text>
+            </View>
+            <StatusPill value={bill.status} />
+          </View>
+
+          <View className="h-px bg-edge my-4" />
+
+          {detail.map(([l, v], i) => (
+            <View
+              key={l}
+              className={"flex-row justify-between py-2.5 " + (i < detail.length - 1 ? "border-b border-edge" : "")}
+            >
+              <Text className="text-[11px] text-muted font-bold">{l}</Text>
+              <Text className="text-[11px] font-black text-ink">{v}</Text>
+            </View>
+          ))}
+        </View>
+
+        {payment ? (
+          <View className="bg-successSoft border border-edge rounded-2xl p-4 mb-4">
+            <View className="flex-row items-center mb-3">
+              <Ionicons name="checkmark-circle" size={16} color="#12A95C" />
+              <Text className="text-[12px] font-black text-success ml-2">Payment Record</Text>
+            </View>
+            {[
+              ["Reference", payment.paymentReference],
+              ["Method", payment.paymentMethod],
+              ["Date", fmt(payment.paymentDate)],
+              ["Amount", money(payment.amount)],
+            ].map(([l, v]) => (
+              <View key={l} className="flex-row justify-between py-1.5">
+                <Text className="text-[11px] text-muted font-bold">{l}</Text>
+                <Text className="text-[11px] font-black text-ink">{v}</Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          className="flex-row items-center justify-center border border-brand rounded-2xl py-3 mb-3"
+        >
+          <Ionicons name="download-outline" size={16} color="#1769FF" />
+          <Text className="text-[13px] font-black text-brand ml-2">Download Bill</Text>
+        </TouchableOpacity>
+
+        {bill.balanceDue > 0 ? (
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => router.push({ pathname: "/payments/make", params: { billId: bill.$id } })}
+            className="bg-brand rounded-2xl py-4 items-center"
+          >
+            <Text className="text-white font-black text-[14px]">Pay {money(bill.balanceDue)}</Text>
+          </TouchableOpacity>
+        ) : null}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
