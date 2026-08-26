@@ -1,58 +1,25 @@
-import { Account as AppwriteAccount, Client, Databases, Query } from 'react-native-appwrite';
-import type { Account, Bill, Payment, Resident } from './types';
+import {
+  Client,
+  Account,
+  Databases,
+  Query,
+} from "react-native-appwrite";
 
-const endpoint = process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT ?? 'https://syd.cloud.appwrite.io/v1';
-const projectId = process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID ?? 'smart-pay';
-const databaseId = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID ?? 'smartpay-db';
+const client = new Client()
+  .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!)
+  .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!)
+  .setPlatform("smartpay-resident-mobile");
 
-export const COLLECTIONS = {
-  residents: 'residents',
-  accounts: 'resident_accounts',
-  bills: 'bills',
-  payments: 'payments',
-};
-
-export const client = new Client()
-  .setEndpoint(endpoint)
-  .setProject(projectId);
-
-export const account = new AppwriteAccount(client);
+export const account = new Account(client);
 export const databases = new Databases(client);
 
-export async function getResidentData(userId: string) {
-  const residentResult = await databases.listDocuments(
-    databaseId,
-    COLLECTIONS.residents,
-    [Query.equal('userId', userId), Query.limit(1)],
-  );
+export const DATABASE_ID =
+  process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 
-  if (!residentResult.documents[0]) throw new Error('Resident profile not found.');
-  const resident = residentResult.documents[0] as unknown as Resident;
-
-  const accountResult = await databases.listDocuments(
-    databaseId,
-    COLLECTIONS.accounts,
-    [Query.equal('residentId', resident.$id), Query.limit(1)],
-  );
-
-  const billsResult = await databases.listDocuments(
-    databaseId,
-    COLLECTIONS.bills,
-    [Query.equal('residentId', resident.$id), Query.orderDesc('billingDate')],
-  );
-
-  const paymentsResult = await databases.listDocuments(
-    databaseId,
-    COLLECTIONS.payments,
-    [Query.equal('residentId', resident.$id), Query.orderDesc('paymentDate')],
-  );
-
-  return {
-    resident,
-    account: (accountResult.documents[0] as unknown as Account) ?? null,
-    bills: billsResult.documents as unknown as Bill[],
-    payments: paymentsResult.documents as unknown as Payment[],
-  };
-}
-
-export { databaseId };
+export const COLLECTIONS = {
+  residents: "residents",
+  residentAccounts: "resident_accounts",
+  bills: "bills",
+  payments: "payments",
+  revenueSources: "revenue_sources",
+};
