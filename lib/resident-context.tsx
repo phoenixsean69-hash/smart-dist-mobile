@@ -1,45 +1,154 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
-import { account, getResidentData } from './appwrite';
-import type { Account, Bill, Payment, Resident } from './types';
+﻿import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
-const demoResident: Resident = {
-  $id: 'res-001', userId: 'resident-user-001', firstName: 'Tapiwa', lastName: 'Moyo', phone: '+263771000001', email: 'tapiwa.moyo@example.com', nationalId: '63-100001A63', address: 'House 14, Chiedza Township', ward: 'Ward 1', propertyNumber: 'W1-0014', smsEnabled: true, status: 'active'
+import {
+  account,
+  getResidentData,
+} from "./appwrite";
+
+import type {
+  Account as ResidentAccount,
+  Bill,
+  Payment,
+  Resident,
+} from "./types";
+
+type ResidentContextValue = {
+  resident: Resident | null;
+  account: ResidentAccount | null;
+  bills: Bill[];
+  payments: Payment[];
+  loading: boolean;
+  authenticated: boolean;
+  refresh: () => Promise<void>;
 };
-const demoAccount: Account = { $id: 'acct-001', residentId: 'res-001', accountNumber: 'SP-000001', balance: 0, arrears: 0, credit: 0, status: 'current', lastBillingDate: '2026-07-31T18:06:05Z', lastPaymentDate: '2026-08-13T18:06:05Z' };
-const demoBills: Bill[] = [
-  { $id: 'bill-001-rates', billNumber: 'BILL-260001', residentId: 'res-001', accountId: 'acct-001', revenueSourceId: 'rev-rates', description: 'August property rates', amount: 55, amountPaid: 55, balanceDue: 0, billingDate: '2026-07-31T18:06:05Z', dueDate: '2026-08-15T18:06:05Z', status: 'paid' },
-  { $id: 'bill-001-water', billNumber: 'BILL-260002', residentId: 'res-001', accountId: 'acct-001', revenueSourceId: 'rev-water', description: 'August water charges', amount: 28, amountPaid: 28, balanceDue: 0, billingDate: '2026-07-31T18:06:05Z', dueDate: '2026-08-25T18:06:05Z', status: 'paid' },
-];
-const demoPayments: Payment[] = [
-  { $id: 'pay-002', paymentReference: 'PAY-260002', residentId: 'res-001', accountId: 'acct-001', billId: 'bill-001-water', revenueSourceId: 'rev-water', amount: 28, paymentMethod: 'Cash', channel: 'council_office', currency: 'USD', paymentDate: '2026-08-14T18:06:05Z', status: 'completed', receivedBy: 'staff-revenue', notes: 'Water bill settled.' },
-  { $id: 'pay-001', paymentReference: 'PAY-260001', residentId: 'res-001', accountId: 'acct-001', billId: 'bill-001-rates', revenueSourceId: 'rev-rates', amount: 55, paymentMethod: 'EcoCash', channel: 'mobile_money', currency: 'USD', paymentDate: '2026-08-13T18:06:05Z', status: 'completed', receivedBy: 'staff-revenue', notes: 'Property rates settled.' },
-];
 
-type ContextValue = { resident: Resident; account: Account; bills: Bill[]; payments: Payment[]; refresh: () => Promise<void>; loading: boolean };
-const ResidentContext = createContext<ContextValue | null>(null);
+const ResidentContext =
+  createContext<ResidentContextValue | null>(null);
 
-export function ResidentProvider({ children }: PropsWithChildren) {
-  const [data, setData] = useState({ resident: demoResident, account: demoAccount, bills: demoBills, payments: demoPayments });
-  const [loading, setLoading] = useState(false);
+
+export function ResidentProvider({
+  children,
+}: PropsWithChildren) {
+
+  const [resident, setResident] =
+    useState<Resident | null>(null);
+
+  const [residentAccount, setResidentAccount] =
+    useState<ResidentAccount | null>(null);
+
+  const [bills, setBills] =
+    useState<Bill[]>([]);
+
+  const [payments, setPayments] =
+    useState<Payment[]>([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [authenticated, setAuthenticated] =
+    useState(false);
+
 
   const refresh = async () => {
+
     setLoading(true);
+
     try {
-      const user = await account.get();
-      const fresh = await getResidentData(user.$id);
-      setData(fresh as any);
-    } catch {
-      // Keep the seeded demo resident visible while the app is offline or before login.
-    } finally { setLoading(false); }
+
+      const user =
+        await account.get();
+
+      setAuthenticated(true);
+
+      const data =
+        await getResidentData(user.$id);
+
+      setResident(data.resident);
+
+      setResidentAccount(data.account);
+
+      setBills(data.bills);
+
+      setPayments(data.payments);
+
+    } catch (error) {
+
+      console.log(
+        "Resident backend error:",
+        error
+      );
+
+      setAuthenticated(false);
+
+      setResident(null);
+
+      setResidentAccount(null);
+
+      setBills([]);
+
+      setPayments([]);
+
+    } finally {
+
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { refresh(); }, []);
-  const value = useMemo(() => ({ ...data, refresh, loading }), [data, loading]);
-  return <ResidentContext.Provider value={value}>{children}</ResidentContext.Provider>;
+
+  useEffect(() => {
+
+    refresh();
+
+  }, []);
+
+
+  const value =
+    useMemo(
+      () => ({
+        resident,
+        account: residentAccount,
+        bills,
+        payments,
+        loading,
+        authenticated,
+        refresh,
+      }),
+      [
+        resident,
+        residentAccount,
+        bills,
+        payments,
+        loading,
+        authenticated,
+      ]
+    );
+
+
+  return (
+    <ResidentContext.Provider value={value}>
+      {children}
+    </ResidentContext.Provider>
+  );
 }
 
+
 export function useResident() {
-  const value = useContext(ResidentContext);
-  if (!value) throw new Error('useResident must be used inside ResidentProvider');
+
+  const value =
+    useContext(ResidentContext);
+
+  if (!value) {
+    throw new Error(
+      "useResident must be used inside ResidentProvider"
+    );
+  }
+
   return value;
 }
