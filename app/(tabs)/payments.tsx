@@ -1,3 +1,4 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
 import { useResident } from '../../lib/resident-context';
 import { useState } from 'react';
@@ -79,7 +80,7 @@ export default function Payments() {
             <View key={p.id} style={{ backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#E2E8F0', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
                 <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#F0FDF4', alignItems: 'center', justifyContent: 'center' }}>
-                  <Text style={{ fontSize: 16 }}>✓</Text>
+                  <MaterialIcons name="check-circle" size={20} color="#16A34A" />
                 </View>
                 <View>
                   <Text style={{ fontWeight: '800', fontSize: 13, color: '#0F172A' }}>${p.amount.toFixed(2)} • {p.method}</Text>

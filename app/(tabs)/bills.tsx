@@ -1,3 +1,4 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
 import { useResident } from '../../lib/resident-context';
 import { useRouter } from 'expo-router';
@@ -62,7 +63,7 @@ export default function Bills() {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
                 <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: bill.type === 'Water' ? '#EEF4FF' : '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>
-                  <Text style={{ fontSize: 18 }}>{bill.type === 'Water' ? '💧' : '🏠'}</Text>
+                  <MaterialIcons name={bill.type === "Water" ? "water-drop" : "home"} size={22} color={bill.type === "Water" ? "#1769FF" : "#062B6F"} />
                 </View>
                 <View>
                   <Text style={{ fontWeight: '800', fontSize: 14, color: '#0F172A' }}>{bill.type} • {bill.month}</Text>
@@ -81,7 +82,7 @@ export default function Bills() {
                 </TouchableOpacity>
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  <Text style={{ fontSize: 12 }}>✅</Text>
+                  <MaterialIcons name="check-circle" size={14} color="#16A34A" />
                   <Text style={{ fontSize: 11, fontWeight: '600', color: '#16A34A' }}>Paid</Text>
                 </View>
               )}
@@ -91,7 +92,7 @@ export default function Bills() {
 
         {filtered.length === 0 && (
           <View style={{ backgroundColor: '#fff', borderRadius: 18, padding: 32, alignItems: 'center', marginTop: 20, borderWidth: 1, borderColor: '#E2E8F0' }}>
-            <Text style={{ fontSize: 32 }}>📭</Text>
+            <MaterialIcons name="mark-email-read" size={40} color="#94A3B8" />
             <Text style={{ fontWeight: '800', marginTop: 12, color: '#0F172A' }}>No {filter} bills</Text>
             <Text style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>You're all caught up</Text>
           </View>

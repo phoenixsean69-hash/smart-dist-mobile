@@ -1,3 +1,4 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
 import { useResident } from '../../lib/resident-context';
 import { useRouter } from 'expo-router';
@@ -40,7 +41,7 @@ export default function Home() {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <View>
             <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' }}>{t('welcomeBack')}</Text>
-            <Text style={{ color: '#fff', fontSize: 22, fontWeight: '900', marginTop: 4 }}>{firstName} 👋</Text>
+            <Text style={{ color: '#fff', fontSize: 22, fontWeight: '900', marginTop: 4 }}>{firstName}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, backgroundColor: 'rgba(255,255,255,0.12)', alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}>
               <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 10, fontWeight: '700' }}>STAND • {stand}</Text>
             </View>
@@ -84,7 +85,7 @@ export default function Home() {
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
           <TouchableOpacity onPress={() => router.push('/(tabs)/bills' as any)} style={{ width: '48%', backgroundColor: '#fff', borderRadius: 18, padding: 16, borderWidth: 1, borderColor: '#E2E8F0' }}>
             <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-              <Text style={{ fontSize: 18 }}>🧾</Text>
+              <MaterialIcons name="receipt-long" size={22} color="#062B6F" />
             </View>
             <Text style={{ color: '#0F172A', fontWeight: '800', fontSize: 13 }}>{t('viewBills')}</Text>
             <Text style={{ color: '#64748B', fontSize: 11, marginTop: 2 }}>{t('checkLeviesWater')}</Text>
@@ -92,7 +93,7 @@ export default function Home() {
 
           <TouchableOpacity onPress={() => router.push('/(tabs)/payments' as any)} style={{ width: '48%', backgroundColor: '#1769FF', borderRadius: 18, padding: 16, shadowColor: '#1769FF', shadowOpacity: 0.3, shadowRadius: 12, shadowOffset: { width: 0, height: 6 }, elevation: 6 }}>
             <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-              <Text style={{ fontSize: 18 }}>💳</Text>
+              <MaterialIcons name="payment" size={22} color="#FFFFFF" />
             </View>
             <Text style={{ color: '#fff', fontWeight: '800', fontSize: 13 }}>{t('makePayment')}</Text>
             <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, marginTop: 2 }}>{t('paySecurely')}</Text>
@@ -100,7 +101,7 @@ export default function Home() {
 
           <TouchableOpacity onPress={() => router.push('/(tabs)/payments' as any)} style={{ width: '48%', backgroundColor: '#fff', borderRadius: 18, padding: 16, borderWidth: 1, borderColor: '#E2E8F0' }}>
             <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#EEF4FF', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-              <Text style={{ fontSize: 18 }}>📊</Text>
+              <MaterialIcons name="history" size={22} color="#1769FF" />
             </View>
             <Text style={{ color: '#0F172A', fontWeight: '800', fontSize: 13 }}>{t('paymentHistory')}</Text>
             <Text style={{ color: '#64748B', fontSize: 11, marginTop: 2 }}>{t('pastReceipts')}</Text>
@@ -108,7 +109,7 @@ export default function Home() {
 
           <TouchableOpacity onPress={() => router.push('/(tabs)/profile' as any)} style={{ width: '48%', backgroundColor: '#062B6F', borderRadius: 18, padding: 16 }}>
             <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-              <Text style={{ fontSize: 18 }}>📢</Text>
+              <MaterialIcons name="campaign" size={22} color="#FFFFFF" />
             </View>
             <Text style={{ color: '#fff', fontWeight: '800', fontSize: 13 }}>{t('community')}</Text>
             <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 2 }}>{t('noticesUpdates')}</Text>
