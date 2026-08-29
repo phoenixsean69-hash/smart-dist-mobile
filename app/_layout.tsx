@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View, Text, Animated, Easing } from 'react-native';
 import { account } from '../lib/appwrite';
 import { ResidentProvider } from '../lib/resident-context';
+import { LanguageProvider } from '../lib/i18n';
 
 function AuthLoadingScreen() {
   const pulse = useRef(new Animated.Value(0.8)).current;
@@ -113,12 +114,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ResidentProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-      </Stack>
-      <StatusBar style="light" />
-    </ResidentProvider>
+    <LanguageProvider>
+      <ResidentProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+        </Stack>
+        <StatusBar style="light" />
+      </ResidentProvider>
+    </LanguageProvider>
   );
 }

@@ -4,6 +4,7 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusPill } from "../../components/StatusPill";
 import { useResident } from "../../lib/resident-context";
+import { useLanguage } from "../../lib/i18n";
 
 const money = (n: number) => "$" + (n ?? 0).toFixed(2);
 const fmt = (s: string) =>
@@ -12,6 +13,7 @@ const fmt = (s: string) =>
 export default function BillDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { bills, payments } = useResident();
+  const { t } = useLanguage();
   const bill = bills.find((x) => x.$id === id) ?? bills[0];
   const payment = payments.find((x) => x.billId === bill?.$id);
 
@@ -31,7 +33,7 @@ export default function BillDetails() {
         <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 items-center justify-center">
           <Ionicons name="arrow-back" size={22} color="#ffffff" />
         </TouchableOpacity>
-        <Text className="flex-1 text-center text-white text-lg font-extrabold">Bill Details</Text>
+        <Text className="flex-1 text-center text-white text-lg font-extrabold">{t('billDetails')}</Text>
         <View className="w-10" />
       </View>
 

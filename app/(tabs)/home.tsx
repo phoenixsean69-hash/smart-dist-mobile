@@ -2,11 +2,13 @@ import { View, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndic
 import { useResident } from '../../lib/resident-context';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import { useLanguage } from '../../lib/i18n';
 
 export default function Home() {
   const { resident, loading, refresh } = useResident() as any;
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -18,7 +20,7 @@ export default function Home() {
     return (
       <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator color="#1769FF" />
-        <Text style={{ marginTop: 12, color: '#64748B', fontSize: 12, fontWeight: '600' }}>LOADING HOME</Text>
+        <Text style={{ marginTop: 12, color: '#64748B', fontSize: 12, fontWeight: '600' }}>{t('loadingHome')}</Text>
       </View>
     );
   }
@@ -37,7 +39,7 @@ export default function Home() {
         
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <View>
-            <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' }}>Welcome back</Text>
+            <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' }}>{t('welcomeBack')}</Text>
             <Text style={{ color: '#fff', fontSize: 22, fontWeight: '900', marginTop: 4 }}>{firstName} 👋</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, backgroundColor: 'rgba(255,255,255,0.12)', alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}>
               <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 10, fontWeight: '700' }}>STAND • {stand}</Text>

@@ -1,12 +1,14 @@
 import { View, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
 import { useResident } from '../../lib/resident-context';
 import { useState } from 'react';
+import { useLanguage } from '../../lib/i18n';
 
 export default function Payments() {
   const { resident, loading } = useResident() as any;
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('EcoCash');
   const [paying, setPaying] = useState(false);
+  const { t } = useLanguage();
 
   if (loading) {
     return <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator color="#1769FF" /></View>;
@@ -20,11 +22,11 @@ export default function Payments() {
   ];
 
   const handlePay = () => {
-    if (!amount) { Alert.alert('Enter amount'); return; }
+    if (!amount) { Alert.alert(t('enterAmount')); return; }
     setPaying(true);
     setTimeout(() => {
       setPaying(false);
-      Alert.alert('Payment initiated', `${method} payment of $${amount} is processing`);
+      Alert.alert(t('paymentInitiated'), t('processing', { method, amount: `$${amount}` }));
       setAmount('');
     }, 1200);
   };
