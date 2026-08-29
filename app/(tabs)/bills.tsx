@@ -2,6 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndic
 import { useResident } from '../../lib/resident-context';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import { useLanguage } from '../../lib/i18n';
 
 type BillFilter = 'all' | 'unpaid' | 'paid';
 
@@ -10,6 +11,7 @@ export default function Bills() {
   const [filter, setFilter] = useState<BillFilter>('all');
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -37,7 +39,7 @@ export default function Bills() {
         <View style={{ position: 'absolute', top: -30, right: -30, width: 140, height: 140, borderRadius: 70, backgroundColor: '#0A3A8A', opacity: 0.5 }} />
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <View>
-            <Text style={{ fontSize: 22, fontWeight: '900', color: '#fff' }}>My Bills</Text>
+            <Text style={{ fontSize: 22, fontWeight: '900', color: '#fff' }}>{t('myBills')}</Text>
             <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>Stand {resident?.standNumber || '----'} • {filtered.length} bills</Text>
           </View>
           <View style={{ backgroundColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' }}>
@@ -75,7 +77,7 @@ export default function Bills() {
               <Text style={{ fontSize: 20, fontWeight: '900', color: '#0F172A' }}>${bill.amount.toFixed(2)}</Text>
               {bill.status === 'unpaid' ? (
                 <TouchableOpacity onPress={() => router.push('/(tabs)/payments' as any)} style={{ backgroundColor: '#1769FF', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 10 }}>
-                  <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>Pay</Text>
+                  <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>{t('pay')}</Text>
                 </TouchableOpacity>
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>

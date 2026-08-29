@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useResident } from "../../lib/resident-context";
+import { useLanguage } from "../../lib/i18n";
 
 const money = (n: number) => "$" + (n ?? 0).toFixed(2);
 
@@ -16,6 +17,7 @@ const METHODS = [
 export default function MakePayment() {
   const { billId } = useLocalSearchParams<{ billId?: string }>();
   const { bills } = useResident();
+  const { t } = useLanguage();
   const bill = useMemo(
     () => bills.find((b) => b.$id === billId) ?? bills.find((b) => b.balanceDue > 0) ?? bills[0],
     [billId, bills]
@@ -32,7 +34,7 @@ export default function MakePayment() {
         <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 items-center justify-center">
           <Ionicons name="arrow-back" size={22} color="#ffffff" />
         </TouchableOpacity>
-        <Text className="flex-1 text-center text-white text-lg font-extrabold">Make Payment</Text>
+        <Text className="flex-1 text-center text-white text-lg font-extrabold">{t('makePayment')}</Text>
         <View className="w-10" />
       </View>
 
@@ -103,7 +105,7 @@ export default function MakePayment() {
         <TextInput
           value={note}
           onChangeText={setNote}
-          placeholder="Add a note..."
+          placeholder={t('addNote')}
           placeholderTextColor="#9AA7BC"
           multiline
           className="bg-white border border-edge rounded-2xl px-4 py-3 text-[13px] text-ink mb-5"

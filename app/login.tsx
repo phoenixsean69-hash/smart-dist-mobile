@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, Keyb
 import { useRouter } from 'expo-router';
 import { account } from '../lib/appwrite';
 import { StatusBar } from 'expo-status-bar';
+import { useLanguage } from '../lib/i18n';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('tapiwa@test.com');
@@ -10,10 +11,11 @@ export default function LoginScreen() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Missing fields', 'Enter email and password');
+      Alert.alert(t('missingFields'), t('enterEmailPassword'));
       return;
     }
     try {
@@ -31,7 +33,7 @@ export default function LoginScreen() {
       console.log('[login] user:', user.$id);
       router.replace('/(tabs)/home' as any);
     } catch (err: any) {
-      Alert.alert('Login failed', err?.message ?? 'Check credentials');
+      Alert.alert(t('loginFailed'), err?.message ?? t('checkCredentials'));
     } finally {
       setLoading(false);
     }
