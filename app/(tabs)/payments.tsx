@@ -36,7 +36,7 @@ export default function Payments() {
       <View style={{ backgroundColor: '#062B6F', paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
         <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' }}>{t('totalOutstanding')}</Text>
         <Text style={{ color: '#fff', fontSize: 32, fontWeight: '900', marginTop: 6 }}>${Number(balance).toFixed(2)}</Text>
-        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginTop: 4 }}>Stand {resident?.standNumber || '----'} â€¢ {resident?.fullName || ''}</Text>
+        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginTop: 4 }}>Stand {resident?.standNumber || '----'} • {resident?.fullName || ''}</Text>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
@@ -79,11 +79,11 @@ export default function Payments() {
             <View key={p.id} style={{ backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#E2E8F0', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
                 <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#F0FDF4', alignItems: 'center', justifyContent: 'center' }}>
-                  <Text style={{ fontSize: 16 }}>âœ“</Text>
+                  <Text style={{ fontSize: 16 }}>✓</Text>
                 </View>
                 <View>
-                  <Text style={{ fontWeight: '800', fontSize: 13, color: '#0F172A' }}>${p.amount.toFixed(2)} â€¢ {p.method}</Text>
-                  <Text style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>{p.date} â€¢ {p.ref}</Text>
+                  <Text style={{ fontWeight: '800', fontSize: 13, color: '#0F172A' }}>${p.amount.toFixed(2)} • {p.method}</Text>
+                  <Text style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>{p.date} • {p.ref}</Text>
                 </View>
               </View>
               <View style={{ backgroundColor: '#F0FDF4', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}>
