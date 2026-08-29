@@ -34,18 +34,18 @@ export default function Payments() {
   return (
     <View style={{ flex: 1, backgroundColor: '#F6F8FF' }}>
       <View style={{ backgroundColor: '#062B6F', paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
-        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' }}>Total Outstanding</Text>
+        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' }}>{t('totalOutstanding')}</Text>
         <Text style={{ color: '#fff', fontSize: 32, fontWeight: '900', marginTop: 6 }}>${Number(balance).toFixed(2)}</Text>
-        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginTop: 4 }}>Stand {resident?.standNumber || '----'} • {resident?.fullName || ''}</Text>
+        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginTop: 4 }}>Stand {resident?.standNumber || '----'} â€¢ {resident?.fullName || ''}</Text>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
         {/* Make Payment Card */}
         <View style={{ backgroundColor: '#fff', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: '#E2E8F0' }}>
-          <Text style={{ fontSize: 13, fontWeight: '800', color: '#0F172A' }}>Make Payment</Text>
-          <Text style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>Secure payment powered by SmartPay</Text>
+          <Text style={{ fontSize: 13, fontWeight: '800', color: '#0F172A' }}>{t('makePayment')}</Text>
+          <Text style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>{t('securePayment')}</Text>
 
-          <Text style={{ fontSize: 10, fontWeight: '700', color: '#334155', letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 20, marginBottom: 8 }}>Amount (USD)</Text>
+          <Text style={{ fontSize: 10, fontWeight: '700', color: '#334155', letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 20, marginBottom: 8 }}>{t('amountUsd')}</Text>
           <View style={{ backgroundColor: '#F8FAFF', borderWidth: 1.5, borderColor: '#E2E8F0', borderRadius: 14, paddingHorizontal: 16, height: 52, flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{ fontWeight: '800', color: '#0F172A', marginRight: 8 }}>$</Text>
             <TextInput value={amount} onChangeText={setAmount} keyboardType="numeric" placeholder={balance.toFixed(2)} placeholderTextColor="#94A3B8" style={{ flex: 1, fontSize: 16, fontWeight: '700', color: '#0F172A' }} />
@@ -54,7 +54,7 @@ export default function Payments() {
             </TouchableOpacity>
           </View>
 
-          <Text style={{ fontSize: 10, fontWeight: '700', color: '#334155', letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 16, marginBottom: 8 }}>Payment Method</Text>
+          <Text style={{ fontSize: 10, fontWeight: '700', color: '#334155', letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 16, marginBottom: 8 }}>{t('paymentMethod')}</Text>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             {['EcoCash','ZiG','Card'].map(m => (
               <TouchableOpacity key={m} onPress={() => setMethod(m)} style={{ flex: 1, paddingVertical: 12, borderRadius: 12, alignItems: 'center', backgroundColor: method === m ? '#062B6F' : '#fff', borderWidth: 1, borderColor: method === m ? '#062B6F' : '#E2E8F0' }}>
@@ -79,11 +79,11 @@ export default function Payments() {
             <View key={p.id} style={{ backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#E2E8F0', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
                 <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#F0FDF4', alignItems: 'center', justifyContent: 'center' }}>
-                  <Text style={{ fontSize: 16 }}>✓</Text>
+                  <Text style={{ fontSize: 16 }}>âœ“</Text>
                 </View>
                 <View>
-                  <Text style={{ fontWeight: '800', fontSize: 13, color: '#0F172A' }}>${p.amount.toFixed(2)} • {p.method}</Text>
-                  <Text style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>{p.date} • {p.ref}</Text>
+                  <Text style={{ fontWeight: '800', fontSize: 13, color: '#0F172A' }}>${p.amount.toFixed(2)} â€¢ {p.method}</Text>
+                  <Text style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>{p.date} â€¢ {p.ref}</Text>
                 </View>
               </View>
               <View style={{ backgroundColor: '#F0FDF4', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}>
